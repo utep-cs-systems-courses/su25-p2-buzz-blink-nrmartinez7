@@ -22,7 +22,7 @@ void advance_250th(){
     P1OUT &= ~LED_RED;
     P1OUT |= LED_GREEN;
   }
-  else if(timeCounter== 500){
+  else if(timeCounter== 500x){
     P1OUT &= ~LED_GREEN;
     P1OUT |= LED_RED;
     timeCounter=0;
