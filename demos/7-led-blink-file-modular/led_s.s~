@@ -1,0 +1,53 @@
+	.arch msp430g2553
+	.p2align 1,0
+	.text
+
+	.global led_init
+	.global led_update
+	.extern P1DIR
+	.extern P1OUT
+
+	.data
+	.global red_on
+	.global green_on
+	.global led_changed
+
+red_on:	 	.byte 0
+green_on:	.byte 0
+led_changed:	.byte 0
+
+redVal:		.byte 0, 64
+greenVal:	.byte 0, 1
+
+	.text
+
+;; led_init(), sets for output, flags, calls update
+led_init:
+	bis #65, &P1DIR
+	mov.b #1, &led_changed
+	call #led_update
+	ret
+
+;; led_update(), updates states based on flags
+led_update:
+	mov.b &led_changed, r12
+	cmp.b #0, r12
+	jeq update_end
+
+	mov.b &red_on, r12 	;redVal[red_on] into r13
+	mov.b redVal(r12), r13
+
+	mov.b &green_on, r12 	;greenVal[green_on] into r14
+	mov.b greenVal(r12), r13
+
+	bis.b r14,r13 		;r13=ledFlags
+
+	mov.b &P1OUT, r12 	;clear LEDs and set new bits
+	and.b #~65,r12
+	bis.b r13,r12
+	mov.b r12, &P1OUT
+
+	mov.b #0, &led_changed
+
+update_end:
+	ret
