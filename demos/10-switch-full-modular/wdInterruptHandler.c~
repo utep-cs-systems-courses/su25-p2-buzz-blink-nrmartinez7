@@ -1,0 +1,30 @@
+#include <msp430.h>
+#include "switches.h"
+#include "led.h"
+
+static char blink_state =0;
+
+void __interrupt_vec(WDT_VECTOR) WDT(){
+  static int blink_count=0;
+  blink_count++;
+
+  if(blink_count >=125){
+    blink_count=0;
+    blink_state ^=1;
+
+    if(blink_state){
+      if(switch_state_down){
+	set_green_led(1);
+	set_red_led(0);
+      }else{
+	set_green_led(0);
+	set_red_led(1);
+      }
+    }else{
+      set_green_led(0);
+      set_red_led(1);
+    }
+    led_update();
+  }
+}
+

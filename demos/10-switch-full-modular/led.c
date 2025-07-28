@@ -9,16 +9,27 @@ void led_init()
   led_update();
 }
 
+static char red_on=0;
+static char green_on=0;
+
+void set_red_led(char on){
+  red_on=on;
+}
+
+void set_green_led(char on){
+  green_on=on;
+}
+
 void led_update(){
-  if (switch_state_changed) {
-    char ledFlags = 0; /* by default, no LEDs on */
+  char ledFlags=0;
 
-    ledFlags |= switch_state_down ? LED_GREEN : 0;
-    ledFlags |= switch_state_down ? 0 : LED_RED;
-
-    P1OUT &= (0xff - LEDS) | ledFlags; // clear bits for off leds
-    P1OUT |= ledFlags;         // set bits for on leds
+  if(red_on){
+    ledFlags |= LED_RED;
   }
-  switch_state_changed = 0;
+  if(green_on){
+    ledFlags |= LED_GREEN;
+  }
+
+  P1OUT=(P1OUT & ~LEDS)|ledFlags;
 }
 

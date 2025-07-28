@@ -9,5 +9,6 @@ void main(void)
   switch_init();
   led_init();
 
+  enableWDTInterrupts();
   or_sr(0x18);  // CPU off, GIE on
 } 
