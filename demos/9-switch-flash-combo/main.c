@@ -1,8 +1,8 @@
 #include <msp430.h>
 #include "libTimer.h"
 
-#define LED_RED BIT0               // P1.0
-#define LED_GREEN BIT6             // P1.6
+#define LED_GREEN BIT0               // P1.0
+#define LED_RED BIT6             // P1.6
 #define LEDS (LED_RED | LED_GREEN)
 
 #define SW1 BIT3		/* switch1 is p1.3 */
@@ -68,13 +68,16 @@ void
 __interrupt_vec(WDT_VECTOR) WDT()	/* 250 interrupts/sec */
 {
   static int blink_count = 0;
-  switch (blink_count) { 
-  case 6: 
-    blink_count = 0;
-    P1OUT |= LED_RED;
-    break;
-  default:
-    blink_count ++;
-    if (!buttonDown) P1OUT &= ~LED_RED; /* don't blink off if button is down */
+  blink_count++;
+
+  if(blink_count >=250){
+    blink_count=0;
+
+    if(!buttonDown){
+      P1OUT ^=LED_RED;
+    }else{
+      P1OUT |= LED_RED;
+    }
   }
-} 
+}
+ 
