@@ -1,0 +1,20 @@
+//runs toy project
+#include <msp430.h>
+#include "libTimer.h"
+#include "switches.h"
+#include "led.h"
+#include "buzzer.h"
+#include "wdInterruptHandler.h"
+
+//assy state transition
+extern void assy_trans();
+
+int main(){
+  configureClocks();
+  enableWDTInterrupts();
+  switch_init();
+  set_state(0);
+  or_sr(0x18);
+  return 0;
+}
+
