@@ -1,7 +1,6 @@
 #ifndef switches_included
 #define switches_included
-
-#define SWITCHES (BIT0|BIT1|BIT2|BIT3);
+#define SWITCHES (BIT0|BIT1|BIT2|BIT3)
 
 void switch_init();
 void switch_interrupt_handler();

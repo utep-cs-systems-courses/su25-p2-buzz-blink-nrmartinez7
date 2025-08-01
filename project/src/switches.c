@@ -1,43 +1,51 @@
+//handles input from buttons (P2.0-P2.3)
+
 #include <msp430.h>
 #include "switches.h"
 #include "wdInterruptHandler.h"
 
-int temp=0;
-
+//init buttons
 void switch_init(){
-  P2REN |= BIT0| BIT1|BIT2|BIT3;
-  P2OUT |= BIT0| BIT1|BIT2|BIT3;
-  P2DIR &= ~(BIT0| BIT1|BIT2|BIT3);
-  P2IE |= BIT0| BIT1|BIT2|BIT3;
-  P2IES |= BIT0| BIT1|BIT2|BIT3;
-  P2IFG &= ~(BIT0| BIT1|BIT2|BIT3);
+  P2REN |= SWITCHES;
+  P2OUT |= SWITCHES;
+  P2DIR &= ~SWITCHES;
+  P2IE |= SWITCHES;
+  P2IES |= SWITCHES;
+  P2IFG &= ~SWITCHES;
 }
 
+
+/*
+  runs when interrupted by button
+  1. sets next state
+  2. clears interrupt flag,
+  3. calls advance_state(0) (assembly file that handles state transitions)
+*/
 void __interrupt_vec(PORT2_VECTOR) Port_2(){
   //first button
   if(P2IFG & BIT0){
-    set_state(0);
+    next_state=0;
+    advance_state(0);
     P2IFG &= ~BIT0;
-    advance_state(temp);
 
   //second button
   }else if(P2IFG &BIT1){
-    set_state(1);
+    next_state=1;
+    advance_state(0);
     P2IFG &= ~BIT1;
-    advance_state(temp);
 
 
   //third button
   }else if(P2IFG &BIT2){
-    set_state(2);
+    next_state=2;
+    advance_state(0);
     P2IFG &= ~BIT2;
-    advance_state(temp);
     
   //fourth button
   }else if(P2IFG &BIT3){
-    set_state(3);
+    next_state=3;
+    advance_state(0);
     P2IFG &= ~BIT3;
-    advance_state(temp);
   }
 }
 

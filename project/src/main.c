@@ -6,15 +6,16 @@
 #include "buzzer.h"
 #include "wdInterruptHandler.h"
 
-//assy state transition
-extern void assy_trans();
-
 int main(){
   configureClocks();
   enableWDTInterrupts();
+
+  led_init();
+  buzzer_init();
   switch_init();
-  set_state(0);
-  or_sr(0x18);
+  set_state(0);   //init state 0
+  
+  or_sr(0x18);   //CPU off, GIE on
   return 0;
 }
 

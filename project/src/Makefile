@@ -13,6 +13,13 @@ all: toy.elf
 toy.elf: ${COMMON_OBJECTS} ../lib/libTimer.a
 	${CC} ${CFLAGS} -o $@ $^ ${LDFLAGS}
 
+%.o: %.c
+	${CC} ${CFLAGS} -c -o $@ $<
+
+
+assy.o: assy.s
+	${AS} -mmcu=${CPU} -o $@ $<
+
 load: toy.elf
 	msp430loader.sh $^
 
