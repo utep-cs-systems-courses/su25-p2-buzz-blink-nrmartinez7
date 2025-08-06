@@ -7,12 +7,6 @@
 char state=0;
 char next_state=0;
 
-//used for leds
-static int count=0;
-static int led_dim=0;
-static int led_bright=1;
-static int dim_cycle=0;
-
 //tone sequence
 static short tone_sequence[]={
   293, 0, 311, 0,  329, 0, //D, Eb, E
@@ -26,8 +20,12 @@ static short tone_sequence[]={
 };
 
 static int index=0;
-static int sequence_len=32;
-static int tone_delay=0;
+static int sequence_len=sizeof(tone_sequence)/sizeof(short);
+static int count=0;
+
+#define frequency 10
+#define on_freq 3
+static int pulse=0;
 
 //changes state, resets index and counter
 void set_state(int new_state){
@@ -44,12 +42,9 @@ void advance_state(int next){
 
 //runs toy, checks state and updates leds and sound
 void __interrupt_vec(WDT_VECTOR) WDT(){
-  count++;
-
   //handles dimming
-  if(++dim_cycle>=125){
-    dim_cycle=0;
-    led_dim= !led_dim;
+  if(++pulse>=frequency){
+    pulse=0;
   }
 
   switch(state){
@@ -71,8 +66,8 @@ void __interrupt_vec(WDT_VECTOR) WDT(){
   //green-red alternating, tone sequence
   case 2:
     //red green alternating
-    if(++tone_delay>=60){
-      tone_delay=0;
+    if(++count>=60){
+      count=0;
       set_red_led(index%2);
       set_green_led(!(index%2));
       buzzer_set_period(tone_sequence[index]);
@@ -82,8 +77,8 @@ void __interrupt_vec(WDT_VECTOR) WDT(){
 
   //dimming leds, siren
   case 3:
-    set_red_led(led_dim);
-    set_green_led(led_dim);
+    set_red_led(pulse<on_freq);
+    set_green_led(pulse<on_freq);
 
     buzzer_set_period(1000+500 *(index%10));
     index++;
